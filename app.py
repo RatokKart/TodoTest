@@ -48,8 +48,11 @@ def selectData(res):
 
     cur = db.cursor()
 
-    #TODO LIKEがなぜ動かないのか？
-    cur.execute('SELECT * FROM world.country WHERE world.country.Name LIKE ?', ('%' +res+'%,'))
+    sql = 'SELECT * FROM world.country WHERE world.country.Name LIKE %s'
+    para = ('%' + res + '%',)
+
+    cur.execute(sql, para)
+
     resultData = cur.fetchall()
 
     cur.close()
