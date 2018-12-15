@@ -1,17 +1,25 @@
 <html>
 <head>
-    <title>Hello {{ name }}</title>
+    <title>Webアプリテスト</title>
 </head>
 <body>
-    <h1>こんにちは{{ name }}さん</h1>
+    <h1>Webアプリテスト</h1>
 
     <form action="/search" method="GET">
     	<input name="get_value" value="">
     	<input type="submit" value="検索">
     </form>
 
-	<div>{{resultData}}</div>
-
+	<ul>
+        {% for result in resultData %}
+            <li>
+                名前:{{result.Name}}
+            </li>
+            <li>
+                リージョン:{{result.Region}}
+            </li>
+        {% endfor %}
+    </ul>
 
 </body>
 </html>
