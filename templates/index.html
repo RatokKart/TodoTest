@@ -10,13 +10,15 @@
     	<input type="submit" value="検索">
     </form>
 
+	<div>{{resultData}}<div>
+
 	<ul>
         {% for result in resultData %}
             <li>
-                名前:{{result.Name}}
+                ID:{{result.id}}
             </li>
             <li>
-                リージョン:{{result.Region}}
+                Name:{{result.name}}
             </li>
         {% endfor %}
     </ul>

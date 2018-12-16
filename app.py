@@ -1,7 +1,8 @@
 #!/bin/env python
 # coding: utf-8
-import os, pymysql
+import os, psycopg2
 from flask import Flask, render_template, request
+from psycopg2.extras import DictCursor
 
 app = Flask(__name__)
 app.debug = True
@@ -37,18 +38,13 @@ def search():
 #******************************
 def selectData(res):
 
-    db = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='password',
-            db='world',
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
-        )
+    db = psycopg2.connect('dbname=postgres host=localhost user=postgres password=hiropost')
 
-    cur = db.cursor()
+    #実行結果を辞書形式で取得する
+    cur = db.cursor(cursor_factory=DictCursor)
 
-    sql = 'SELECT * FROM world.country WHERE world.country.Name LIKE %s'
+    sql = 'SELECT * FROM public.sample'
+    #sql = 'SELECT * FROM world.country WHERE world.country.Name LIKE %s'
     para = ('%' + res + '%',)
 
     cur.execute(sql, para)
