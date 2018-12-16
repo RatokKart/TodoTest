@@ -3,6 +3,7 @@
 import os, psycopg2
 from flask import Flask, render_template, request
 from psycopg2.extras import DictCursor
+from psycopg2.tests.testconfig import dbname
 
 app = Flask(__name__)
 app.debug = True
@@ -38,7 +39,7 @@ def search():
 #******************************
 def selectData(res):
 
-    db = psycopg2.connect('dbname=postgres host=localhost user=postgres password=hiropost')
+    db = psycopg2.connect(setDbCfg())
 
     #実行結果を辞書形式で取得する
     cur = db.cursor(cursor_factory=DictCursor)
@@ -55,6 +56,39 @@ def selectData(res):
     db.close()
 
     return resultData
+
+#**************************************************
+#DB接続設定(TODO コンフィグで切替するまでの仮対応)
+#**************************************************
+def setDbCfg():
+
+    #ローカル用
+    #return setDbCfgLocal()
+
+    #Heroku用
+    return setDbCfgHeroku()
+
+
+def setDbCfgLocal():
+
+    dbnameStr = 'postgres'
+    hostStr = 'localhost'
+    userStr = 'postgres'
+    passwordStr = 'hiropost'
+
+    dbStr = 'dbname={0} host={1} user={2} password={3}'.format(dbnameStr, hostStr, userStr, passwordStr)
+    return dbStr
+
+
+def setDbCfgHeroku():
+
+    dbnameStr = 'dbrt0fsq9u00rg'
+    hostStr = 'ec2-184-72-239-186.compute-1.amazonaws.com'
+    userStr = 'gsrcnbjllcvskz'
+    passwordStr = '9c3d8452aef3e916739e506f90c46b51e2e79a9a2728b04b81bd0f6aef4d15fa'
+
+    dbStr = 'dbname={0} host={1} user={2} password={3}'.format(dbnameStr, hostStr, userStr, passwordStr)
+    return dbStr
 
 #********************************
 #おまじない（最下部に書くこと）
