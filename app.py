@@ -3,22 +3,27 @@
 import os, psycopg2
 from flask import Flask, render_template, request
 from psycopg2.extras import DictCursor
-from psycopg2.tests.testconfig import dbname
 
 app = Flask(__name__)
 app.debug = True
 
-
+#*************************************
+#ルート
+#*************************************
 @app.route('/')
 def top():
     return u'テスト'
 
+#*************************************
 #初期表示
+#*************************************
 @app.route('/top/<name>')
 def index(name=''):
     return render_template('index.html', name=name)
 
+#*************************************
 #検索
+#*************************************
 @app.route('/search', methods=['GET','POST'])
 #@app.route('/search')
 def search():
@@ -29,8 +34,11 @@ def search():
     elif request.method == 'POST':
         res = request.form['post_value']
 
-    #データ取得
-    resultData = selectData(res)
+    resultData = ""
+
+    if len(res) > 0:
+        #データ取得
+        resultData = selectData(res)
 
     return render_template('index.html', resultData=resultData)
 
