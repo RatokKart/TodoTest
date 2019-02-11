@@ -9,12 +9,18 @@
 <body>
     <h1>TODOアプリ</h1>
 
-    <form action="/search/incomp" method="GET">
-    	<input type="submit" id="search_incomp" value="未完了検索">
+    <form action="/tododata" method="GET">
+    	<input type="submit" value="一覧検索">
     </form>
 
-    <form action="/search/all" method="GET">
-    	<input type="submit" id="search_all" value="一覧検索">
+    <form action="/tododata/incomp" method="GET">
+    	<input type="submit" value="未完了検索">
+    </form>
+
+    <form action="/tododata" method="POST">
+    	<input type="text" name="content" value="">
+    	<input type="text" name="priority" value="">
+    	<input type="submit" value="登録">
     </form>
 
 	<div>{{resultData}}<div>

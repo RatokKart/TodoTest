@@ -22,26 +22,10 @@ def index(name=''):
     return render_template('index.html', name=name)
 
 #*************************************
-# 個別検索
-#*************************************
-@app.route('/search/', methods=['GET'])
-#@app.route('/search')
-def search():
-
-    res = request.args.get('get_value')
-    resultData = ""
-
-    if len(res) > 0:
-        resultData = selectData(res)
-
-    return render_template('index.html', resultData=resultData)
-
-#*************************************
 # 一覧検索
 #*************************************
-@app.route('/search/all', methods=['GET'])
-#@app.route('/search')
-def search_all():
+@app.route('/tododata', methods=['GET'])
+def search_tododata_all():
 
     sql = "SELECT * FROM public.tododata"
     resultData = selectData(sql)
@@ -51,12 +35,27 @@ def search_all():
 #*************************************
 # 未完了検索
 #*************************************
-@app.route('/search/incomp', methods=['GET'])
-#@app.route('/search')
-def search_incomp():
+@app.route('/tododata/incomp', methods=['GET'])
+def search_tododata_incomp():
 
     sql = """SELECT * FROM public.tododata WHERE "Status" = '0'"""
     resultData = selectData(sql)
+
+    return render_template('index.html', resultData=resultData)
+
+#*************************************
+# 登録
+#*************************************
+@app.route('/tododata', methods=['POST'])
+def regist_tododata():
+
+    content = request.form.getlist('content')
+    priority = request.form.getlist('priority')
+
+    resultData = ""
+    if len(content) > 0 and len(priority) > 0:
+        sql = ""
+        resultData = registData(sql)
 
     return render_template('index.html', resultData=resultData)
 
@@ -78,16 +77,36 @@ def selectData(sql):
 
     return resultData
 
+#******************************
+# データ登録
+#******************************
+def registData(sql):
+
+    #TODO 登録処理検討中
+
+    db = psycopg2.connect(setDbCfg())
+
+    #実行結果を辞書形式で取得する
+    cur = db.cursor(cursor_factory=DictCursor)
+    cur.execute(sql)
+
+    resultData = cur.fetchall()
+
+    cur.close()
+    db.close()
+
+    return resultData
+
 #**************************************************
 # DB接続設定
 #**************************************************
 def setDbCfg():
 
     #ローカル用
-    #return setDbCfgLocal()
+    return setDbCfgLocal()
 
     #Heroku用
-    return setDbCfgHeroku()
+    #return setDbCfgHeroku()
 
 #**********************
 # DB接続設定(ローカル)
