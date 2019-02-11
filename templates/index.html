@@ -1,27 +1,37 @@
-<html>
+<html lang="ja">
 <head>
-    <title>Webアプリテスト</title>
+<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=11">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TODOアプリ</title>
 </head>
-<body>
-    <h1>Webアプリテスト</h1>
 
-    <form action="/search" method="GET">
-    	<input name="get_value" value="">
-    	<input type="submit" value="検索">
+<body>
+    <h1>TODOアプリ</h1>
+
+    <form action="/search/incomp" method="GET">
+    	<input type="submit" id="search_incomp" value="未完了検索">
+    </form>
+
+    <form action="/search/all" method="GET">
+    	<input type="submit" id="search_all" value="一覧検索">
     </form>
 
 	<div>{{resultData}}<div>
 
-	<ul>
-        {% for result in resultData %}
+	<ul>{% for result in resultData %}
             <li>
-                ID:{{result.id}}
+                Content:{{result.Content}}
             </li>
             <li>
-                Name:{{result.name}}
+                Priority:{{result.Priority}}
+            </li>
+            <li>
+                Status:{{result.Status}}
             </li>
         {% endfor %}
     </ul>
 
 </body>
+
 </html>

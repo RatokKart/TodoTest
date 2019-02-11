@@ -8,55 +8,68 @@ app = Flask(__name__)
 app.debug = True
 
 #*************************************
-#ルート
+# ルート
 #*************************************
 @app.route('/')
 def top():
     return u'テスト'
 
 #*************************************
-#初期表示
+# 初期表示
 #*************************************
 @app.route('/top/<name>')
 def index(name=''):
     return render_template('index.html', name=name)
 
 #*************************************
-#検索
+# 個別検索
 #*************************************
-@app.route('/search', methods=['GET','POST'])
+@app.route('/search/', methods=['GET'])
 #@app.route('/search')
 def search():
 
-    #GET、POST判定
-    if request.method == 'GET':
-        res = request.args.get('get_value')
-    elif request.method == 'POST':
-        res = request.form['post_value']
-
+    res = request.args.get('get_value')
     resultData = ""
 
     if len(res) > 0:
-        #データ取得
         resultData = selectData(res)
 
     return render_template('index.html', resultData=resultData)
 
+#*************************************
+# 一覧検索
+#*************************************
+@app.route('/search/all', methods=['GET'])
+#@app.route('/search')
+def search_all():
+
+    sql = "SELECT * FROM public.tododata"
+    resultData = selectData(sql)
+
+    return render_template('index.html', resultData=resultData)
+
+#*************************************
+# 未完了検索
+#*************************************
+@app.route('/search/incomp', methods=['GET'])
+#@app.route('/search')
+def search_incomp():
+
+    sql = """SELECT * FROM public.tododata WHERE "Status" = '0'"""
+    resultData = selectData(sql)
+
+    return render_template('index.html', resultData=resultData)
+
 #******************************
-#データ取得
+# データ取得
 #******************************
-def selectData(res):
+def selectData(sql):
 
     db = psycopg2.connect(setDbCfg())
 
     #実行結果を辞書形式で取得する
     cur = db.cursor(cursor_factory=DictCursor)
-
-    sql = 'SELECT * FROM public.sample'
-    #sql = 'SELECT * FROM world.country WHERE world.country.Name LIKE %s'
-    para = ('%' + res + '%',)
-
-    cur.execute(sql, para)
+    cur.execute(sql)
 
     resultData = cur.fetchall()
 
@@ -66,17 +79,19 @@ def selectData(res):
     return resultData
 
 #**************************************************
-#DB接続設定(TODO コンフィグで切替するまでの仮対応)
+# DB接続設定
 #**************************************************
 def setDbCfg():
 
     #ローカル用
-    #return setDbCfgLocal()
+    return setDbCfgLocal()
 
     #Heroku用
-    return setDbCfgHeroku()
+    #return setDbCfgHeroku()
 
-
+#**********************
+# DB接続設定(ローカル)
+#**********************
 def setDbCfgLocal():
 
     dbnameStr = 'postgres'
@@ -87,7 +102,9 @@ def setDbCfgLocal():
     dbStr = 'dbname={0} host={1} user={2} password={3}'.format(dbnameStr, hostStr, userStr, passwordStr)
     return dbStr
 
-
+#**********************
+# DB接続設定(Heroku)
+#**********************
 def setDbCfgHeroku():
 
     dbnameStr = 'dbrt0fsq9u00rg'
