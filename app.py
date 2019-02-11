@@ -84,10 +84,10 @@ def selectData(sql):
 def setDbCfg():
 
     #ローカル用
-    return setDbCfgLocal()
+    #return setDbCfgLocal()
 
     #Heroku用
-    #return setDbCfgHeroku()
+    return setDbCfgHeroku()
 
 #**********************
 # DB接続設定(ローカル)
