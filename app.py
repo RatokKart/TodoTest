@@ -26,10 +26,7 @@ def index(name=''):
 #*************************************
 @app.route('/tododata', methods=['GET'])
 def search_tododata_all():
-
-    sql = "SELECT * FROM public.tododata"
-    resultData = selectData(sql)
-
+    resultData = sql_search_tododata_all()
     return render_template('index.html', resultData=resultData)
 
 #*************************************
@@ -37,10 +34,7 @@ def search_tododata_all():
 #*************************************
 @app.route('/tododata/incomp', methods=['GET'])
 def search_tododata_incomp():
-
-    sql = """SELECT * FROM public.tododata WHERE "Status" = '0'"""
-    resultData = selectData(sql)
-
+    resultData = sql_search_tododata_incomp()
     return render_template('index.html', resultData=resultData)
 
 #*************************************
@@ -48,16 +42,47 @@ def search_tododata_incomp():
 #*************************************
 @app.route('/tododata', methods=['POST'])
 def regist_tododata():
-
-    content = request.form.getlist('content')
-    priority = request.form.getlist('priority')
+    content = request.form.getlist('content')[0]
+    priority = "1"
 
     resultData = ""
     if len(content) > 0 and len(priority) > 0:
-        sql = ""
-        resultData = registData(sql)
+
+        sql = """ INSERT INTO public.tododata("Content", "Priority","Status") VALUES(%s, %s, '0') """
+        registData(sql, content, priority)
+        resultData = sql_search_tododata_all()
 
     return render_template('index.html', resultData=resultData)
+
+#*************************************
+# 削除
+#*************************************
+@app.route('/tododata/<string:content>', methods=['DELETE'])
+def delete_tododata(content):
+    resultData = ""
+    if len(content) > 0:
+
+        sql = """ DELETE FROM public.tododata WHERE "Content" = %s"""
+        deleteData(sql, content)
+        resultData = sql_search_tododata_all()
+
+    return render_template('index.html', resultData=resultData)
+
+#******************************
+# SQL 一覧検索
+#******************************
+def sql_search_tododata_all():
+
+    sql = "SELECT * FROM public.tododata"
+    return selectData(sql)
+
+#*************************************
+# SQL 未完了検索
+#*************************************
+def sql_search_tododata_incomp():
+
+    sql = """SELECT * FROM public.tododata WHERE "Status" = '0'"""
+    return selectData(sql)
 
 #******************************
 # データ取得
@@ -80,22 +105,30 @@ def selectData(sql):
 #******************************
 # データ登録
 #******************************
-def registData(sql):
-
-    #TODO 登録処理検討中
+def registData(sql, content, priority):
 
     db = psycopg2.connect(setDbCfg())
 
-    #実行結果を辞書形式で取得する
-    cur = db.cursor(cursor_factory=DictCursor)
-    cur.execute(sql)
-
-    resultData = cur.fetchall()
+    cur = db.cursor()
+    cur.execute(sql, (content, priority))
+    db.commit()
 
     cur.close()
     db.close()
 
-    return resultData
+#******************************
+# データ削除
+#******************************
+def deleteData(sql, content):
+
+    db = psycopg2.connect(setDbCfg())
+
+    cur = db.cursor()
+    cur.execute(sql, (content))
+    db.commit()
+
+    cur.close()
+    db.close()
 
 #**************************************************
 # DB接続設定
