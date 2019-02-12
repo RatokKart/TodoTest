@@ -57,8 +57,10 @@ def regist_tododata():
 #*************************************
 # 削除
 #*************************************
-@app.route('/tododata/<string:content>', methods=['DELETE'])
-def delete_tododata(content):
+@app.route('/tododata/delete', methods=['POST'])
+def delete_tododata():
+    content = request.form.getlist('content')[0]
+
     resultData = ""
     if len(content) > 0:
 
@@ -124,7 +126,7 @@ def deleteData(sql, content):
     db = psycopg2.connect(setDbCfg())
 
     cur = db.cursor()
-    cur.execute(sql, (content))
+    cur.execute(sql, (content,))
     db.commit()
 
     cur.close()
@@ -136,10 +138,10 @@ def deleteData(sql, content):
 def setDbCfg():
 
     #ローカル用
-    return setDbCfgLocal()
+    #return setDbCfgLocal()
 
     #Heroku用
-    #return setDbCfgHeroku()
+    return setDbCfgHeroku()
 
 #**********************
 # DB接続設定(ローカル)
